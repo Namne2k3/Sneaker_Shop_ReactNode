@@ -11,6 +11,7 @@ import {
 import { authenticate, isAdmin } from '../middlewares/authMiddleware.js';
 import { validateRequest } from '../middlewares/validationMiddleware.js';
 import { categoryValidation, idValidation } from '../utils/validators.js';
+import { parseFormData } from '../middlewares/formDataMiddleware.js';
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.get('/:id', idValidation, validateRequest, getCategoryById);
 router.post('/',
     authenticate,
     isAdmin,
+    parseFormData,
     categoryValidation.create,
     validateRequest,
     createCategory
@@ -32,6 +34,7 @@ router.post('/',
 router.put('/:id',
     authenticate,
     isAdmin,
+    parseFormData,  // Add form-data parser middleware
     idValidation,
     categoryValidation.update,
     validateRequest,

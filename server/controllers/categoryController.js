@@ -1,5 +1,6 @@
 import Category from '../models/Category.js';
 import Product from '../models/Product.js';
+import { uploadFile } from '../services/cdnService.js';
 import {
     okResponse,
     createdResponse,
@@ -11,11 +12,11 @@ import {
 
 export const createCategory = async (req, res) => {
     try {
+
         const {
             name,
             description,
-            parent,
-            image
+            parent
         } = req.body;
 
         const existingCategory = await Category.findOne({ name });
@@ -30,11 +31,17 @@ export const createCategory = async (req, res) => {
             }
         }
 
+        if (!req.file) {
+            return badRequestResponse(res, 'Chưa tải lên ảnh danh mục');
+        }
+
+        const imageUrl = await uploadFile(req.file.path, 'categories');
+
         const category = await Category.create({
             name,
             description,
             parent: parent || null,
-            image
+            image: imageUrl
         });
 
         return createdResponse(res, 'Tạo danh mục thành công', category);
@@ -141,7 +148,6 @@ export const getCategoryById = async (req, res) => {
         return handleError(res, error);
     }
 };
-
 
 export const getCategoryBySlug = async (req, res) => {
     try {
