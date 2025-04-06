@@ -1,4 +1,5 @@
-import { body } from 'express-validator';
+import { body, validationResult } from 'express-validator';
+import { validationErrorResponse } from '../utils/response.js';
 
 export const registerValidation = [
     body('fullName')
@@ -22,3 +23,11 @@ export const loginValidation = [
     body('password')
         .notEmpty().withMessage('Mật khẩu không được để trống')
 ];
+
+export const validateRequest = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return validationErrorResponse(res, errors.array());
+    }
+    next();
+};
