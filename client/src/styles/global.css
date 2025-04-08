@@ -1,0 +1,108 @@
+/* Input styles */
+input,
+select,
+textarea {
+    @apply border-gray-300 rounded-md shadow-sm;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    @apply ring-2 ring-blue-500 border-blue-500 outline-none;
+}
+
+/* Ensure text in buttons and inputs is always visible */
+button,
+input,
+select,
+textarea {
+    @apply text-gray-800;
+}
+
+/* Fix button text colors */
+.bg-primary {
+    @apply text-white;
+}
+
+.bg-primary-dark {
+    @apply text-white;
+}
+
+.bg-secondary {
+    @apply text-white;
+}
+
+/* Fix for white text on white background */
+.bg-white .text-white,
+.bg-gray-50 .text-white {
+    @apply text-gray-800;
+}
+
+/* Only use text-white on dark backgrounds */
+.bg-primary .text-white,
+.bg-primary-dark .text-white,
+.bg-secondary .text-white,
+.bg-gray-800 .text-white,
+.bg-gray-900 .text-white,
+.bg-black .text-white {
+    @apply text-white;
+}
+
+/* Fix tables */
+table {
+    @apply w-full;
+}
+
+table th {
+    @apply font-medium text-left;
+}
+
+/* Fix forms and inputs */
+.form-group {
+    @apply mb-4;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.form-input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md;
+}
+
+.form-input:focus {
+    @apply ring-2 ring-blue-500 border-blue-500 outline-none;
+}
+
+/* Primary color utilities */
+.hover\:bg-primary-dark:hover {
+    @apply bg-blue-700;
+}
+
+.focus\:ring-primary:focus {
+    @apply ring-blue-500;
+}
+
+.focus\:border-primary:focus {
+    @apply border-blue-500;
+}
+
+.text-primary {
+    @apply text-blue-500;
+}
+
+.hover\:text-primary-dark:hover {
+    @apply text-blue-700;
+}
+
+.bg-primary {
+    @apply bg-blue-500;
+}
+
+.bg-primary-dark {
+    @apply bg-blue-700;
+}
+
+.border-primary {
+    @apply border-blue-500;
+}
