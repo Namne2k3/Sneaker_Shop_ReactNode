@@ -135,7 +135,7 @@ app.post('/upload/:type', upload.single('image'), (req, res) => {
 });
 
 // Route: Upload multiple images (max 10)
-app.post('/upload/:type/multiple', upload.array('images', 10), (req, res) => {
+app.post('/upload/:type/multiple', upload.array('images'), (req, res) => {
     try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({
