@@ -18,7 +18,7 @@ export const authenticate = async (req, res, next) => {
 
         const decoded = verifyToken(token, 'access');
 
-        const user = await User.findById(decoded.id).select({ password: 0 })
+        const user = await User.findById(decoded.id).select({ password: 0 }) //.select('-password')
 
         if (!user) {
             return res.status(401).json({

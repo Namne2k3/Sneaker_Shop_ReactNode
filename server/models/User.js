@@ -1,4 +1,4 @@
-import mongoose, { mongo } from 'mongoose'
+import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 
 const userSchema = new mongoose.Schema({
@@ -24,32 +24,21 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    avatar: {
-        type: String,
-        default: ''
-    },
     role: {
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
     },
-    address: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Address'
-    }],
+    // Updated address field to allow both String and Array types or be empty
+    address: {
+        type: "String",
+        default: ''
+    },
     isActive: {
         type: Boolean,
         default: true
     },
-    refreshToken: String,
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
-    }
+    refreshToken: String
 }, {
     timestamps: true
 })

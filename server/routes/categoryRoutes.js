@@ -34,8 +34,8 @@ router.post('/',
 router.put('/:id',
     authenticate,
     isAdmin,
-    parseFormData,  // Add form-data parser middleware
     idValidation,
+    parseFormData,
     categoryValidation.update,
     validateRequest,
     updateCategory

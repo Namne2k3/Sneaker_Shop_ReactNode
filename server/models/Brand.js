@@ -12,18 +12,11 @@ const brandSchema = new mongoose.Schema({
         type: String,
         unique: true
     },
-    description: {
-        type: String
-    },
     logo: {
         type: String
     },
-    website: {
+    description: {
         type: String
-    },
-    featured: {
-        type: Boolean,
-        default: false
     },
     status: {
         type: String,
@@ -42,6 +35,12 @@ brandSchema.pre('save', function (next) {
         strict: true
     });
     next();
+});
+
+brandSchema.virtual('products', {
+    ref: 'Product',
+    localField: '_id',
+    foreignField: 'brand'
 });
 
 const Brand = mongoose.model('Brand', brandSchema);

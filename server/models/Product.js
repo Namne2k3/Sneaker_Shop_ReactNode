@@ -1,6 +1,17 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
 
+const productImageSchema = new mongoose.Schema({
+    imagePath: {
+        type: String,
+        required: true
+    },
+    isPrimary: {
+        type: Boolean,
+        default: false
+    }
+});
+
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -15,6 +26,13 @@ const productSchema = new mongoose.Schema({
     description: {
         type: String,
         required: [true, 'Mô tả sản phẩm không được để trống']
+    },
+    featured: {
+        type: Boolean,
+        default: false,
+    },
+    features: {
+        type: String
     },
     basePrice: {
         type: Number,
@@ -35,58 +53,12 @@ const productSchema = new mongoose.Schema({
         ref: 'Brand',
         required: true
     },
-    tags: [{
-        type: String
-    }],
-    thumbnail: {
-        type: String,
-        required: [true, 'Ảnh đại diện không được để trống']
-    },
-    gallery: [{
-        type: String
-    }],
-    featured: {
-        type: Boolean,
-        default: false
-    },
-    isNew: {
-        type: Boolean,
-        default: true
-    },
-    isBestSeller: {
-        type: Boolean,
-        default: false
-    },
-    onSale: {
-        type: Boolean,
-        default: false
-    },
-    averageRating: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 5
-    },
-    reviewCount: {
-        type: Number,
-        default: 0
-    },
-    viewCount: {
-        type: Number,
-        default: 0
-    },
-    specifications: [{
-        name: String,
-        value: String
-    }],
+    images: [productImageSchema],
     status: {
         type: String,
-        enum: ['draft', 'active', 'inactive', 'archived'],
+        enum: ['draft', 'active', 'out_of_stock'],
         default: 'active'
     },
-    metaTitle: String,
-    metaDescription: String,
-    metaKeywords: [String]
 }, {
     timestamps: true,
     toJSON: { virtuals: true },
@@ -105,6 +77,12 @@ productSchema.pre('save', function (next) {
     next();
 });
 
+// Virtual getter for primary image
+productSchema.virtual('primaryImage').get(function () {
+    const primary = this.images.find(img => img.isPrimary);
+    return primary ? primary.imagePath : this.images.length > 0 ? this.images[0].imagePath : null;
+});
+
 // Virtuals for relationships
 productSchema.virtual('variants', {
     ref: 'ProductVariant',
@@ -115,8 +93,7 @@ productSchema.virtual('variants', {
 // Text search index
 productSchema.index({
     name: 'text',
-    description: 'text',
-    tags: 'text'
+    description: 'text'
 });
 
 const Product = mongoose.model('Product', productSchema);

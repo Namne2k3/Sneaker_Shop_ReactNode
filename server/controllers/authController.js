@@ -71,7 +71,6 @@ export const login = async (req, res) => {
         user.refreshToken = refreshToken;
 
         // cập nhật user
-        // lưu user vào cơ sở dữ liệu
         await user.save();
 
         const { password: _, refreshToken: __, ...userWithoutSensitive } = user._doc;

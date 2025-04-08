@@ -61,12 +61,18 @@ cartItemSchema.pre('save', async function (next) {
         }
 
         if (!variant.hasEnoughStock(this.quantity)) {
-            return next(new Error(`Chỉ còn ${variant.availableStock} sản phẩm trong kho`));
+            return next(new Error(`Chỉ còn ${variant.stock} sản phẩm trong kho`));
         }
 
-        // Nếu giá chưa được thiết lập, lấy giá từ biến thể sản phẩm
+        // Calculate price from product base price and variant's additional price
         if (!this.price) {
-            this.price = variant.price;
+            const Product = mongoose.model('Product');
+            const product = await Product.findById(variant.product);
+            if (product) {
+                this.price = product.basePrice + (variant.additionalPrice || 0);
+            } else {
+                return next(new Error('Không tìm thấy sản phẩm'));
+            }
         }
     }
     next();

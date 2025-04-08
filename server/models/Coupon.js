@@ -18,11 +18,15 @@ const couponSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
-    maxDiscount: {
+    minOrderAmount: {
         type: Number,
         default: 0
     },
-    minOrderAmount: {
+    maxUsage: {
+        type: Number,
+        default: 0
+    },
+    usageCount: {
         type: Number,
         default: 0
     },
@@ -34,35 +38,6 @@ const couponSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    maxUsage: {
-        type: Number,
-        default: 0
-    },
-    usageCount: {
-        type: Number,
-        default: 0
-    },
-    maxUsagePerUser: {
-        type: Number,
-        default: 1
-    },
-    applyTo: {
-        type: String,
-        enum: ['all', 'products', 'categories', 'brands'],
-        default: 'all'
-    },
-    applicableProducts: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product'
-    }],
-    applicableCategories: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category'
-    }],
-    applicableBrands: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Brand'
-    }],
     isActive: {
         type: Boolean,
         default: true

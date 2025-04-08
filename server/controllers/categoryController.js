@@ -12,7 +12,6 @@ import {
 
 export const createCategory = async (req, res) => {
     try {
-
         const {
             name,
             description,
@@ -68,10 +67,11 @@ export const getCategories = async (req, res) => {
             filter.parent = parent;
         }
 
-        // Find categories based on filters
+        // sắp xếp dựa vào tham số object filter và sort theo tên tăng dần theo chữ cái
         let query = Category.find(filter).sort({ name: 1 });
 
-        // Populate relationships if requested
+        // join các collection nếu có yêu cầu
+        // lấy ra các category con trong category lớn
         if (includeChildren === 'true') {
             query = query.populate({
                 path: 'children',
@@ -134,12 +134,21 @@ export const getCategoryById = async (req, res) => {
                 category: category._id,
                 status: 'active'
             })
-                .select('name slug thumbnail basePrice averageRating')
+                .select('name slug images basePrice averageRating')
                 .limit(10);
+
+            // Transform products to include thumbnails
+            const transformedProducts = products.map(product => {
+                const productObj = product.toObject();
+                return {
+                    ...productObj,
+                    thumbnail: product.primaryImage
+                };
+            });
 
             return okResponse(res, 'Lấy danh mục thành công', {
                 ...category.toObject(),
-                products
+                products: transformedProducts
             });
         }
 
@@ -160,8 +169,7 @@ export const getCategoryBySlug = async (req, res) => {
         if (includeChildren === 'true') {
             query = query.populate({
                 path: 'children',
-                select: 'name slug image',
-                match: { status: 'active' }
+                select: 'name slug image'
             });
         }
 
@@ -177,12 +185,12 @@ export const getCategoryBySlug = async (req, res) => {
                 category: category._id,
                 status: 'active'
             })
-                .select('name slug thumbnail basePrice averageRating')
+                .select('name slug status images basePrice')
                 .limit(10);
 
             return okResponse(res, 'Lấy danh mục thành công', {
                 ...category.toObject(),
-                products
+                products: products
             });
         }
 
@@ -195,7 +203,7 @@ export const getCategoryBySlug = async (req, res) => {
 export const updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        const updateData = req.body;
+        const updateData = { ...req.body };
 
         // Check if category exists
         const category = await Category.findById(id);
@@ -215,9 +223,12 @@ export const updateCategory = async (req, res) => {
             }
         }
 
-        // If parent is updated, check if it exists and prevent circular reference
-        if (updateData.parent) {
-            // Check if parent exists
+        // Handle parent field properly for null values
+        if (updateData.parent === 'null' || updateData.parent === '' || updateData.parent === null) {
+            // Set parent to null explicitly (not the string "null")
+            updateData.parent = null;
+        } else if (updateData.parent) {
+            // If parent value is provided and not null, verify it exists
             const parentCategory = await Category.findById(updateData.parent);
             if (!parentCategory) {
                 return notFoundResponse(res, 'Danh mục cha không tồn tại');
@@ -238,9 +249,12 @@ export const updateCategory = async (req, res) => {
             }
         }
 
-        // Set parent to null if explicitly provided as null
-        if (updateData.parent === null) {
-            updateData.parent = null;
+        // Handle image upload if there's a file
+        if (req.file) {
+            const imageUrl = await uploadFile(req.file.path, 'categories');
+            if (imageUrl) {
+                updateData.image = imageUrl;
+            }
         }
 
         // Update the category

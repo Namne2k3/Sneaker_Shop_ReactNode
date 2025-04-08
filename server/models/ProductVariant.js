@@ -22,24 +22,16 @@ const productVariantSchema = new mongoose.Schema({
         unique: true,
         trim: true
     },
-    price: {
-        type: Number,
-        required: true
-    },
-    comparePrice: {
-        type: Number,
-        default: 0
-    },
     stock: {
         type: Number,
         required: true,
         default: 0,
         min: 0
     },
-    images: [{
-        type: String
-    }],
-
+    additionalPrice: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
         enum: ['active', 'inactive', 'out_of_stock'],
@@ -59,6 +51,21 @@ productVariantSchema.pre('save', function (next) {
     }
     next();
 });
+
+// Calculate the full price based on product base price and additional price
+productVariantSchema.virtual('price').get(async function () {
+    try {
+        const product = await mongoose.model('Product').findById(this.product);
+        return product ? product.basePrice + this.additionalPrice : this.additionalPrice;
+    } catch (error) {
+        return this.additionalPrice;
+    }
+});
+
+// Method to check stock availability
+productVariantSchema.methods.hasEnoughStock = function (quantity) {
+    return this.stock >= quantity;
+};
 
 const ProductVariant = mongoose.model('ProductVariant', productVariantSchema);
 

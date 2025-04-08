@@ -2,7 +2,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs';
 import dotenv from 'dotenv';
-
+import path from 'path';
 dotenv.config();
 
 const CDN_URL = process.env.CDN_URL || 'http://localhost:5050';
@@ -40,21 +40,51 @@ export const uploadFile = async (filePath, type = 'general') => {
 export const uploadMultipleFiles = async (filePaths, type = 'general') => {
     try {
         const form = new FormData();
-
-        // Add all files to the form
-        filePaths.forEach(filePath => {
-            form.append('images', fs.createReadStream(filePath));
-        });
+        
+        // Kiểm tra xem filePaths có phải là mảng không
+        if (Array.isArray(filePaths)) {
+            // Lặp qua mảng các file và thêm vào form
+            filePaths.forEach((file, index) => {
+                form.append('images', fs.createReadStream(file.path), {
+                    filename: `image-${index}-${path.basename(file.path)}`
+                });
+            });
+        } else {
+            // Nếu không phải mảng, đây có thể là một single file object
+            form.append('images', fs.createReadStream(filePaths.path), {
+                filename: path.basename(filePaths.path)
+            });
+        }
 
         const response = await axios.post(`${CDN_URL}/upload/${type}/multiple`, form, {
             headers: {
                 ...form.getHeaders()
-            }
+            },
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity
         });
+
+        // Xóa các file tạm sau khi upload thành công
+        if (Array.isArray(filePaths)) {
+            filePaths.forEach(file => {
+                fs.unlink(file.path, (err) => {
+                    if (err) console.error(`Lỗi khi xóa file tạm ${file.path}:`, err);
+                });
+            });
+        } else if (filePaths.path) {
+            fs.unlink(filePaths.path, (err) => {
+                if (err) console.error(`Lỗi khi xóa file tạm ${filePaths.path}:`, err);
+            });
+        }
 
         return response.data.data.map(file => file.url);
     } catch (error) {
         console.error('Error uploading multiple files to CDN:', error.message);
+        // Log thêm thông tin chi tiết về lỗi 
+        if (error.response) {
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+        }
         throw new Error('Failed to upload multiple files to CDN');
     }
 };

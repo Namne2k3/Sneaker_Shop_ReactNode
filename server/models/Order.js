@@ -9,11 +9,15 @@ const orderItemSchema = new mongoose.Schema({
     productVariant: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ProductVariant',
-        required: true
+        required: false // Making this optional as not all products have variants
     },
     name: {
         type: String,
         required: true
+    },
+    image: {
+        type: String,
+        default: ""
     },
     price: {
         type: Number,
@@ -23,21 +27,6 @@ const orderItemSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 1
-    },
-    size: {
-        type: String,
-        required: true
-    },
-    color: {
-        type: String,
-        required: true
-    },
-    thumbnail: {
-        type: String
-    },
-    isReviewed: {
-        type: Boolean,
-        default: false
     }
 });
 
@@ -53,19 +42,18 @@ const orderSchema = new mongoose.Schema({
     items: [orderItemSchema],
     subtotal: {
         type: Number,
-        required: true
-    },
-    discount: {
-        type: Number,
-        default: 0
+        required: true,
+        comment: 'Sum of all items before discounts and shipping'
     },
     shippingFee: {
         type: Number,
-        default: 0
+        default: 0,
+        comment: 'Shipping cost'
     },
     total: {
         type: Number,
-        required: true
+        required: true,
+        comment: 'Final amount after discounts and shipping'
     },
     status: {
         type: String,
@@ -82,26 +70,23 @@ const orderSchema = new mongoose.Schema({
         enum: ['cod', 'bank_transfer', 'credit_card', 'momo', 'zalopay', 'vnpay'],
         default: 'cod'
     },
-    paymentDetails: {
-        type: Object
-    },
     shippingAddress: {
         fullName: { type: String, required: true },
+        email: { type: String, required: true },
         phone: { type: String, required: true },
-        province: { type: String, required: true },
-        district: { type: String, required: true },
-        ward: { type: String, required: true },
-        street: { type: String, required: true },
-        notes: { type: String }
-    },
-    shippingMethod: {
-        type: String,
-        enum: ['standard', 'express', 'same_day'],
-        default: 'standard'
+        address: { type: String, required: true },
+        city: { type: String, required: true }
     },
     coupon: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Coupon'
+    },
+    discount: {
+        type: Number,
+        default: 0
+    },
+    notes: {
+        type: String
     },
     statusHistory: [{
         status: {
