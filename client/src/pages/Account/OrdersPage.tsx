@@ -16,8 +16,6 @@ const OrdersPage = () => {
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
-    console.log("Check ordersData >>> ", ordersData?.data.data);
-
     if (isLoading) {
         return (
             <div className="flex justify-center items-center min-h-screen">

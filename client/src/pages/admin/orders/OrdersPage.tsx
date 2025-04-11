@@ -20,8 +20,6 @@ const OrdersPage = () => {
 
     // Debug authentication effect
     useEffect(() => {
-        console.log('Auth status in OrdersPage:', { isAuthenticated, userRole: user?.role });
-
         // If not authenticated, redirect to login
         if (!isAuthenticated) {
             console.log('Not authenticated, redirecting to login');

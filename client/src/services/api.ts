@@ -9,14 +9,11 @@ const api = axios.create({
     },
 });
 
-console.log('Initial API setup: Authorization header =', api.defaults.headers.common['Authorization']);
-
 // Request interceptor to add auth token
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
-        console.log('Request interceptor setting auth token:', `Bearer ${token}`);
     } else {
         console.log('No auth token found in localStorage');
     }

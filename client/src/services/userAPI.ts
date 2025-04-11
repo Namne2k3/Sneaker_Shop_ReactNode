@@ -33,15 +33,40 @@ const userAPI = {
         return response.data;
     },
 
-    // Update user profile (for self)
-    updateProfile: async (data: FormData) => {
-        const response = await api.put('/users/profile', data);
+    // Get user profile (current user)
+    getUserProfile: async () => {
+        const response = await api.get('/users/profile');
         return response.data;
     },
 
-    // Change user password (for self)
-    changePassword: async (data: { currentPassword: string; newPassword: string }) => {
-        const response = await api.put('/users/change-password', data);
+    // Update user profile
+    updateProfile: async (data: FormData) => {
+        const response = await api.put('/users/profile', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    },
+
+    // Change password
+    changePassword: async (currentPassword: string, newPassword: string) => {
+        const response = await api.put('/users/change-password', {
+            currentPassword,
+            newPassword
+        });
+        return response.data;
+    },
+
+    // Update user (for admin)
+    updateUser: async (id: string, userData: any) => {
+        const response = await api.put(`/users/${id}`, userData);
+        return response.data;
+    },
+
+    // Delete user
+    deleteUser: async (id: string) => {
+        const response = await api.delete(`/users/${id}`);
         return response.data;
     }
 };

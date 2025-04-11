@@ -8,9 +8,9 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#3182ce',
-          light: '#4299e1',
-          dark: '#2c5282',
+          DEFAULT: '#3B82F6',
+          dark: '#2563EB',
+          light: '#60A5FA',
         },
         secondary: '#ED8936',
         dark: '#1A202C',
@@ -19,8 +19,19 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         heading: ['Montserrat', 'sans-serif'],
+      },
+      keyframes: {
+        'fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        }
+      },
+      animation: {
+        'fade-in': 'fade-in 0.2s ease-out forwards',
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }

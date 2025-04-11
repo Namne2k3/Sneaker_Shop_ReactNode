@@ -38,6 +38,7 @@ import OrdersPage from './pages/Account/OrdersPage'
 import AdminOrdersPage from './pages/admin/orders/OrdersPage'
 import AdminOrderDetailPage from './pages/admin/orders/OrderDetailPage'
 import OrderDetailPage from './pages/Account/OrderDetailPage'
+import ProfilePage from './pages/Account/ProfilePage'
 
 function App() {
   return (
@@ -238,6 +239,15 @@ function App() {
               <Header />
               <main className="flex-grow">
                 <OrderDetailPage />
+              </main>
+              <Footer />
+            </div>
+          } />
+          <Route path="/profile" element={
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="flex-grow">
+                <ProfilePage />
               </main>
               <Footer />
             </div>
