@@ -1,0 +1,415 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { FiChevronLeft } from 'react-icons/fi';
+import api from '../../../services/api';
+import AlertMessage from '../../../components/common/AlertMessage';
+import LoadingSpinner from '../../../components/common/LoadingSpinner';
+
+interface Coupon {
+    _id: string;
+    code: string;
+    type: 'percentage' | 'fixed';
+    value: number;
+    minOrderAmount: number;
+    maxUsage: number;
+    usageCount: number;
+    startDate: string;
+    endDate: string;
+    isActive: boolean;
+    isValid: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+const EditCouponPage = () => {
+    const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
+    const [alertMessage, setAlertMessage] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
+    const [formData, setFormData] = useState({
+        code: '',
+        type: 'percentage' as 'percentage' | 'fixed',
+        value: 0,
+        minOrderAmount: 0,
+        maxUsage: 0,
+        startDate: '',
+        endDate: '',
+        isActive: true
+    });
+
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Fetch coupon data
+    const { data: couponData, isLoading, isError } = useQuery({
+        queryKey: ['coupon', id],
+        queryFn: async () => {
+            const response = await api.get<{ data: Coupon }>(`/coupons/${id}`);
+            return response.data.data;
+        },
+    });
+
+    // Update form data when coupon data is fetched
+    useEffect(() => {
+        if (couponData) {
+            console.log("Mounting")
+            setFormData({
+                code: couponData.code,
+                type: couponData.type,
+                value: couponData.value,
+                minOrderAmount: couponData.minOrderAmount,
+                maxUsage: couponData.maxUsage,
+                startDate: new Date(couponData.startDate).toISOString().split('T')[0],
+                endDate: new Date(couponData.endDate).toISOString().split('T')[0],
+                isActive: couponData.isActive
+            });
+        }
+
+        return () => {
+            console.log("Unmounting")
+        }
+    }, [couponData]);
+
+    // Update coupon mutation
+    const updateMutation = useMutation({
+        mutationFn: (data: typeof formData) => api.put(`/coupons/${id}`, data),
+        onSuccess: () => {
+            setAlertMessage({ type: 'success', message: 'Cập nhật mã giảm giá thành công!' });
+            setTimeout(() => {
+                navigate('/admin/coupons');
+            }, 1500);
+        },
+        onError: (error: any) => {
+            setAlertMessage({
+                type: 'error',
+                message: error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật mã giảm giá.'
+            });
+        }
+    });
+
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
+
+        if (!formData.code.trim()) {
+            newErrors.code = 'Mã giảm giá không được để trống';
+        } else if (formData.code.includes(' ')) {
+            newErrors.code = 'Mã giảm giá không được chứa khoảng trắng';
+        }
+
+        if (formData.value <= 0) {
+            newErrors.value = 'Giá trị giảm giá phải lớn hơn 0';
+        }
+
+        if (formData.type === 'percentage' && formData.value > 100) {
+            newErrors.value = 'Giảm giá theo phần trăm không thể vượt quá 100%';
+        }
+
+        if (!formData.endDate) {
+            newErrors.endDate = 'Ngày kết thúc là bắt buộc';
+        }
+
+        const startDate = new Date(formData.startDate);
+        const endDate = new Date(formData.endDate);
+        if (endDate <= startDate) {
+            newErrors.endDate = 'Ngày kết thúc phải sau ngày bắt đầu';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+
+        // Handle checkbox separately
+        if (type === 'checkbox') {
+            const checked = (e.target as HTMLInputElement).checked;
+            setFormData(prev => ({ ...prev, [name]: checked }));
+            return;
+        }
+
+        // Handle number inputs
+        if (type === 'number') {
+            setFormData(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
+            return;
+        }
+
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (validateForm()) {
+            updateMutation.mutate(formData);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="p-4 flex items-center justify-center min-h-[400px]">
+                <LoadingSpinner size="large" />
+            </div>
+        );
+    }
+
+    if (isError) {
+        return (
+            <div className="p-4">
+                <div className="mb-4">
+                    <button
+                        onClick={() => navigate('/admin/coupons')}
+                        className="flex items-center text-blue-600 hover:text-blue-800"
+                    >
+                        <FiChevronLeft className="mr-1" />
+                        <span>Quay lại danh sách mã giảm giá</span>
+                    </button>
+                </div>
+                <AlertMessage
+                    type="error"
+                    message="Không thể tải thông tin mã giảm giá. Vui lòng thử lại sau."
+                />
+            </div>
+        );
+    }
+
+    // Display usage information
+    const usageInfo = couponData ? (
+        <div className="mb-6 bg-gray-50 p-4 rounded border border-gray-200">
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Thông tin sử dụng</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p className="text-sm text-gray-500">Số lần đã sử dụng: <span className="font-medium text-gray-700">{couponData.usageCount}</span></p>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-500">Trạng thái:
+                        <span className={`ml-2 font-medium ${couponData.isValid ? 'text-green-600' : 'text-red-600'}`}>
+                            {couponData.isValid ? 'Còn hiệu lực' : 'Hết hiệu lực'}
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-500">Ngày tạo: <span className="font-medium text-gray-700">
+                        {new Date(couponData.createdAt).toLocaleDateString('vi-VN')}
+                    </span></p>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-500">Cập nhật lần cuối: <span className="font-medium text-gray-700">
+                        {new Date(couponData.updatedAt).toLocaleDateString('vi-VN')}
+                    </span></p>
+                </div>
+            </div>
+        </div>
+    ) : null;
+
+    return (
+        <div className="p-4">
+            <div className="mb-6">
+                <button
+                    onClick={() => navigate('/admin/coupons')}
+                    className="flex items-center text-blue-600 hover:text-blue-800"
+                >
+                    <FiChevronLeft className="mr-1" />
+                    <span>Quay lại danh sách mã giảm giá</span>
+                </button>
+                <h1 className="text-2xl font-bold mt-2">Chỉnh sửa mã giảm giá</h1>
+            </div>
+
+            {alertMessage && (
+                <div className="mb-4">
+                    <AlertMessage type={alertMessage.type} message={alertMessage.message} />
+                </div>
+            )}
+
+            {usageInfo}
+
+            <div className="bg-white p-6 rounded shadow">
+                <form onSubmit={handleSubmit}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Mã giảm giá */}
+                        <div>
+                            <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-1">
+                                Mã giảm giá <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="code"
+                                name="code"
+                                value={formData.code}
+                                onChange={handleChange}
+                                className={`w-full p-2 border rounded ${errors.code ? 'border-red-500' : 'border-gray-300'}`}
+                                placeholder="Nhập mã giảm giá (vd: SUMMER2023)"
+                            />
+                            {errors.code && <p className="mt-1 text-sm text-red-500">{errors.code}</p>}
+                            <p className="mt-1 text-xs text-gray-500">
+                                Mã giảm giá phải là duy nhất và không chứa khoảng trắng. Sẽ tự động chuyển thành chữ hoa.
+                            </p>
+                        </div>
+
+                        {/* Loại giảm giá */}
+                        <div>
+                            <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+                                Loại giảm giá <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="type"
+                                name="type"
+                                value={formData.type}
+                                onChange={handleChange}
+                                className="w-full p-2 border border-gray-300 rounded"
+                            >
+                                <option value="percentage">Phần trăm (%)</option>
+                                <option value="fixed">Số tiền cố định (VNĐ)</option>
+                            </select>
+                        </div>
+
+                        {/* Giá trị */}
+                        <div>
+                            <label htmlFor="value" className="block text-sm font-medium text-gray-700 mb-1">
+                                Giá trị <span className="text-red-500">*</span>
+                            </label>
+                            <div className="flex items-center">
+                                <input
+                                    type="number"
+                                    id="value"
+                                    name="value"
+                                    value={formData.value}
+                                    onChange={handleChange}
+                                    min="0"
+                                    step={formData.type === 'percentage' ? '1' : '1000'}
+                                    className={`w-full p-2 border rounded ${errors.value ? 'border-red-500' : 'border-gray-300'}`}
+                                />
+                                <span className="ml-2">
+                                    {formData.type === 'percentage' ? '%' : 'VNĐ'}
+                                </span>
+                            </div>
+                            {errors.value && <p className="mt-1 text-sm text-red-500">{errors.value}</p>}
+                            <p className="mt-1 text-xs text-gray-500">
+                                {formData.type === 'percentage'
+                                    ? 'Nhập % giảm giá (0-100)'
+                                    : 'Nhập số tiền giảm giá cố định'}
+                            </p>
+                        </div>
+
+                        {/* Giá trị đơn hàng tối thiểu */}
+                        <div>
+                            <label htmlFor="minOrderAmount" className="block text-sm font-medium text-gray-700 mb-1">
+                                Giá trị đơn hàng tối thiểu
+                            </label>
+                            <div className="flex items-center">
+                                <input
+                                    type="number"
+                                    id="minOrderAmount"
+                                    name="minOrderAmount"
+                                    value={formData.minOrderAmount}
+                                    onChange={handleChange}
+                                    min="0"
+                                    step="100000"
+                                    className="w-full p-2 border border-gray-300 rounded"
+                                />
+                                <span className="ml-2">VNĐ</span>
+                            </div>
+                            <p className="mt-1 text-xs text-gray-500">
+                                Đặt 0 nếu không yêu cầu giá trị đơn hàng tối thiểu
+                            </p>
+                        </div>
+
+                        {/* Số lần sử dụng tối đa */}
+                        <div>
+                            <label htmlFor="maxUsage" className="block text-sm font-medium text-gray-700 mb-1">
+                                Số lần sử dụng tối đa
+                            </label>
+                            <input
+                                type="number"
+                                id="maxUsage"
+                                name="maxUsage"
+                                value={formData.maxUsage}
+                                onChange={handleChange}
+                                min="0"
+                                className="w-full p-2 border border-gray-300 rounded"
+                            />
+                            <p className="mt-1 text-xs text-gray-500">
+                                Đặt 0 nếu không giới hạn số lần sử dụng.
+                                Đã sử dụng: {couponData?.usageCount || 0} lần.
+                            </p>
+                        </div>
+
+                        {/* Ngày bắt đầu */}
+                        <div>
+                            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                                Ngày bắt đầu <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                id="startDate"
+                                name="startDate"
+                                value={formData.startDate}
+                                onChange={handleChange}
+                                className="w-full p-2 border border-gray-300 rounded"
+                            />
+                        </div>
+
+                        {/* Ngày kết thúc */}
+                        <div>
+                            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+                                Ngày kết thúc <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                id="endDate"
+                                name="endDate"
+                                value={formData.endDate}
+                                onChange={handleChange}
+                                className={`w-full p-2 border rounded ${errors.endDate ? 'border-red-500' : 'border-gray-300'}`}
+                            />
+                            {errors.endDate && <p className="mt-1 text-sm text-red-500">{errors.endDate}</p>}
+                        </div>
+
+                        {/* Trạng thái kích hoạt */}
+                        <div className="md:col-span-2">
+                            <div className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id="isActive"
+                                    name="isActive"
+                                    checked={formData.isActive}
+                                    onChange={handleChange}
+                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700">
+                                    Kích hoạt mã giảm giá
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 flex justify-end">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/admin/coupons')}
+                            className="px-4 py-2 border border-gray-300 rounded shadow mr-2 hover:bg-gray-50"
+                        >
+                            Hủy
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700"
+                            disabled={updateMutation.isPending}
+                        >
+                            {updateMutation.isPending ? (
+                                <span className="flex items-center">
+                                    <LoadingSpinner size="small" color="white" />
+                                    <span className="ml-2">Đang cập nhật...</span>
+                                </span>
+                            ) : (
+                                'Lưu thay đổi'
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default EditCouponPage;

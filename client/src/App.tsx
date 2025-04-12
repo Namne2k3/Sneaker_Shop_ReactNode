@@ -39,6 +39,9 @@ import AdminOrdersPage from './pages/admin/orders/OrdersPage'
 import AdminOrderDetailPage from './pages/admin/orders/OrderDetailPage'
 import OrderDetailPage from './pages/Account/OrderDetailPage'
 import ProfilePage from './pages/Account/ProfilePage'
+import CouponsPage from './pages/admin/coupons/CouponsPage'
+import CreateCouponPage from './pages/admin/coupons/CreateCouponPage'
+import EditCouponPage from './pages/admin/coupons/EditCouponPage'
 
 function App() {
   return (
@@ -144,6 +147,21 @@ function App() {
           <Route path="/admin/orders/:id" element={
             <AdminLayout>
               <AdminOrderDetailPage />
+            </AdminLayout>
+          } />
+          <Route path="/admin/coupons" element={
+            <AdminLayout>
+              <CouponsPage />
+            </AdminLayout>
+          } />
+          <Route path="/admin/coupons/create" element={
+            <AdminLayout>
+              <CreateCouponPage />
+            </AdminLayout>
+          } />
+          <Route path="/admin/coupons/edit/:id" element={
+            <AdminLayout>
+              <EditCouponPage />
             </AdminLayout>
           } />
 

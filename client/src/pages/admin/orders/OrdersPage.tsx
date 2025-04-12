@@ -140,7 +140,7 @@ const OrdersPage = () => {
                             id="status-filter"
                             value={status}
                             onChange={handleStatusChange}
-                            className="form-select rounded border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                            className="p-2 form-select rounded border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                         >
                             <option value="">Tất cả trạng thái</option>
                             <option value="pending">Chờ xác nhận</option>
@@ -158,7 +158,7 @@ const OrdersPage = () => {
                             id="sort-order"
                             value={`${sortBy}-${sortOrder}`}
                             onChange={handleSortChange}
-                            className="form-select rounded border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                            className="p-2 form-select rounded border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                         >
                             <option value="createdAt-desc">Mới nhất trước</option>
                             <option value="createdAt-asc">Cũ nhất trước</option>
