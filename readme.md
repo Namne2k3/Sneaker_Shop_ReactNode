@@ -148,5 +148,6 @@ Dự án đi kèm với các hình ảnh minh họa cho các chức năng chính
 - **Quản lý đơn hàng**: [`quan_ly_don_hang.png`](./pics/quan_ly_don_hang.png)
 - **Quản lý thương hiệu**: [`quan_ly_thuong_hieu.png`](./pics/quan_ly_thuong_hieu.png)
 - **Quản lý người dùng**: [`quan_ly_nguoi_dung.png`](./pics/quan_ly_nguoi_dung.png)
+- **Quản lý mã giảm giá**: [`quan_ly_ma_giam_gia.png`](./pics/quan_ly_ma_giam_gia.png)
 
 Các hình ảnh này minh họa trực quan cho các chức năng và giao diện của ứng dụng SneakerShop, giúp người dùng và nhà phát triển dễ dàng nắm bắt các tính năng của hệ thống.
