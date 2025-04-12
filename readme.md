@@ -142,6 +142,7 @@ Dự án đi kèm với các hình ảnh minh họa cho các chức năng chính
 - **Khác**: [`lien_he.png`](./pics/lien_he.png)
 
 #### Giao diện quản trị
+- **Quản lý thông tin chung**: [`thong_tin_chung_admin.png`](./pics/thong_tin_chung_admin.png)
 - **Quản lý danh mục**: [`quan_ly_danh_muc.png`](./pics/quan_ly_danh_muc.png)
 - **Quản lý sản phẩm**: [`quan_ly_san_pham.png`](./pics/quan_ly_san_pham.png)
 - **Quản lý đơn hàng**: [`quan_ly_don_hang.png`](./pics/quan_ly_don_hang.png)

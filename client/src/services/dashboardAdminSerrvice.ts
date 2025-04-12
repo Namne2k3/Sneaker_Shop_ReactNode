@@ -38,8 +38,8 @@ const statisticsService = {
         const response = await api.get('/statistics/dashboard');
         return response.data;
     },
-    getOrderStatistics: async (): Promise<any> => {
-        const response = await api.get('/statistics/orders');
+    getOrderStatistics: async ({ limit }: { limit: number }): Promise<any> => {
+        const response = await api.get('/statistics/orders/recent?limit=' + limit.toString());
         return response.data;
     },
     getUserStatistics: async (): Promise<any> => {
@@ -47,11 +47,11 @@ const statisticsService = {
         return response.data;
     },
     getPopularProducts: async (limit = 3): Promise<any> => {
-        const response = await api.get('/statistics/popular-products', { params: { limit } });
+        const response = await api.get('/statistics/products/popular', { params: { limit } });
         return response.data;
     },
     getUsersCount: async (): Promise<any> => {
-        const response = await api.get('/statistics/users-count');
+        const response = await api.get('/statistics/users/count');
         return response.data;
     }
 }

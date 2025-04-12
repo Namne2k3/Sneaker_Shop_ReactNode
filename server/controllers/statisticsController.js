@@ -93,6 +93,11 @@ async function getOrderStats(startOfDay, endOfDay, startOfMonth, endOfMonth) {
 
         // stage thứ hai nhóm các đơn hàng
         // và tính tổng doanh thu của từng nhóm
+        // để sử dụng hàm sum thì phải sử dụng đi đôi với group
+        // nhưng group thì phải có trường _id để gom nhóm dựa vào trường nào đó
+        // ở đây chúng ta không cần nhóm theo trường nào cả
+        // vì chúng ta chỉ cần tổng doanh thu của tất cả các đơn hàng
+        // nên chúng ta để _id là null
         {
             $group: {
                 _id: null,
@@ -220,6 +225,8 @@ async function getProductStats() {
 }
 
 // Get popular products
+// hàm này đơn giản là lấy ra 5 sản phẩm có trong các đơn hàng đã được vận chuyển
+// và được sắp xếp giảm dần dựa theo số lượng bán ra nhiều nhất
 export const getPopularProducts = async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 5;
@@ -289,3 +296,33 @@ export const getUserCount = async (req, res) => {
         return handleError(res, error);
     }
 };
+
+// interface Order {
+//     _id: string,
+//     orderNumber: string,
+//     user: {
+//         _id: string,
+//         fullName: string
+//     },
+//     createdAt: string,
+//     total: number,
+//     status: string
+// }
+// Get Statistics Orders
+export const getStatisticsOrders = async (req, res) => {
+    try {
+        const { limit } = req.query;
+
+        const orders = await Order.find()
+            .sort({ createdAt: -1 })
+            .populate({
+                path: 'user',
+                select: '-password -refreshToken'
+            })
+            .limit(limit || 5);
+
+        return okResponse(res, 'Statistics orders retrieved successfully', orders);
+    } catch (error) {
+        return handleError(res, error)
+    }
+}
