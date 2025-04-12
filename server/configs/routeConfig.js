@@ -8,6 +8,7 @@ import userRoutes from '../routes/userRoutes.js'
 import orderRoutes from '../routes/orderRoutes.js'
 import wishlistRoutes from '../routes/wishlistRoutes.js'
 import statisticsRoutes from '../routes/statisticsRoutes.js'
+import couponRoutes from '../routes/couponRoutes.js'
 
 const configRoutes = (app) => {
     // API routes
@@ -21,6 +22,7 @@ const configRoutes = (app) => {
     app.use('/api/orders', orderRoutes)
     app.use('/api/wishlist', wishlistRoutes)
     app.use('/api/statistics', statisticsRoutes)
+    app.use('/api/coupons', couponRoutes)
 
     // Root route
     app.get('/', (req, res) => {
