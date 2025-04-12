@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import statisticsService from '../../services/dashboardAdminSerrvice';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 interface DashboardStat {
     title: string;
@@ -10,7 +13,52 @@ interface DashboardStat {
     link: string;
 }
 
+interface Order {
+    _id: string,
+    orderNumber: string,
+    user: {
+        _id: string,
+        fillName: string
+    },
+    createdAt: string,
+    total: number,
+    status: string
+}
+
+interface PopularProduct {
+    _id: string,
+    name: string,
+    price: number,
+    images: string[],
+    salesCount: number,
+    rating: number,
+}
+
 const DashboardPage = () => {
+
+    const { data: dashboardStats, isLoading: isLoadingStats } = useQuery({
+        queryKey: ['dashboard-stats'],
+        queryFn: statisticsService.getOrderStatistics,
+    });
+
+    const { data: recentOrdersData, isLoading: isLoadingOrders } = useQuery({
+        queryKey: ['recent-orders'],
+        queryFn: () => statisticsService.getOrderStatistics({ limit: 5 })
+    });
+
+    // Fetch popular products
+    const { data: popularProductsData, isLoading: isLoadingProducts } = useQuery({
+        queryKey: ['popular-products'],
+        queryFn: () => statisticsService.getPopularProducts(3),
+    });
+
+    const { data: usersData, isLoading: isLoadingUsers } = useQuery({
+        queryKey: ['users-count'],
+        queryFn: statisticsService.getUsersCount,
+    });
+
+    const isLoading = isLoadingStats || isLoadingOrders || isLoadingProducts || isLoadingUsers;
+
     const [stats, setStats] = useState<DashboardStat[]>([
         {
             title: 'Đơn hàng',
@@ -49,59 +97,61 @@ const DashboardPage = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Simulating API call to get dashboard stats
-        const fetchStats = async () => {
-            try {
-                // In a real app, this would be an API call
-                // const response = await axios.get('/api/admin/stats');
+        if (!isLoading && dashboardStats && popularProductsData && usersData) {
+            const totalOrders = dashboardStats.data.totalOrders || 0;
+            const totalRevenue = dashboardStats.data.totalRevenue || 0;
+            const totalProducts = popularProductsData.data.totalProducts || 0;
+            const totalUsers = usersData.data.totalUsers || 0;
 
-                // Simulate delay and response
-                await new Promise(resolve => setTimeout(resolve, 1000));
+            const ordersThisMonth = dashboardStats.data.ordersThisMonth || 0;
+            const revenueThisMonth = dashboardStats.data.revenueThisMonth || 0;
 
-                // Simulated data
-                setStats([
-                    {
-                        title: 'Đơn hàng',
-                        value: '152',
-                        change: '+12%',
-                        icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
-                        iconBg: 'bg-blue-500',
-                        link: '/admin/orders'
-                    },
-                    {
-                        title: 'Doanh thu',
-                        value: '42.5M₫',
-                        change: '+8.1%',
-                        icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-                        iconBg: 'bg-green-500',
-                        link: '/admin/revenue'
-                    },
-                    {
-                        title: 'Sản phẩm',
-                        value: '86',
-                        change: '+3%',
-                        icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
-                        iconBg: 'bg-indigo-500',
-                        link: '/admin/products'
-                    },
-                    {
-                        title: 'Khách hàng',
-                        value: '320',
-                        change: '+15%',
-                        icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
-                        iconBg: 'bg-orange-500',
-                        link: '/admin/users'
-                    }
-                ]);
-            } catch (error) {
-                console.error('Error fetching dashboard stats:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+            // Format growth percentages (placeholder calculations)
+            const orderGrowth = totalOrders > 0 ? `+${Math.round((ordersThisMonth / totalOrders) * 100)}%` : '+0%';
+            const revenueGrowth = totalRevenue > 0 ? `+${Math.round((revenueThisMonth / totalRevenue) * 100)}%` : '+0%';
+            const productGrowth = '+3%'; // This would need actual data from your API
+            const userGrowth = '+5%';    // This would need actual data from your API
 
-        fetchStats();
-    }, []);
+            setStats([
+                {
+                    title: 'Đơn hàng',
+                    value: totalOrders,
+                    change: orderGrowth,
+                    icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
+                    iconBg: 'bg-blue-500',
+                    link: '/admin/orders'
+                },
+                {
+                    title: 'Doanh thu',
+                    value: `${(totalRevenue / 1000000).toFixed(1)}M₫`,
+                    change: revenueGrowth,
+                    icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+                    iconBg: 'bg-green-500',
+                    link: '/admin/revenue'
+                },
+                {
+                    title: 'Sản phẩm',
+                    value: totalProducts,
+                    change: productGrowth,
+                    icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+                    iconBg: 'bg-indigo-500',
+                    link: '/admin/products'
+                },
+                {
+                    title: 'Khách hàng',
+                    value: totalUsers,
+                    change: userGrowth,
+                    icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
+                    iconBg: 'bg-orange-500',
+                    link: '/admin/users'
+                }
+            ]);
+        }
+    }, [isLoading, dashboardStats, popularProductsData, usersData]);
+
+    const recentOrders: Order[] = recentOrdersData?.data?.orders || [];
+
+    const popularProducts: PopularProduct[] = popularProductsData?.data?.products || [];
 
     return (
         <div>
@@ -166,34 +216,51 @@ const DashboardPage = () => {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {loading ? (
+
+                            {/* kiểm tra nếu đang loading thì hiển thị loadingSpinner */}
+                            {/* nếu không có đơn hàng nào thì hiển thị thông báo không có đơn hàng nào */}
+                            {isLoadingOrders ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-4 text-center">Đang tải...</td>
+                                    <td colSpan={5} className="px-6 py-4 text-center">
+                                        <LoadingSpinner size="small" />
+                                    </td>
+                                </tr>
+                            ) : recentOrders.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                                        Không có đơn hàng nào
+                                    </td>
                                 </tr>
                             ) : (
-                                Array.from({ length: 5 }).map((_, idx) => (
-                                    <tr key={idx} className="hover:bg-gray-50">
+                                recentOrders.map((order) => (
+                                    <tr key={order._id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">SP2306{1000 + idx}</div>
+                                            <div className="text-sm text-gray-900">{order.orderNumber}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">Khách hàng {idx + 1}</div>
+                                            <div className="text-sm text-gray-900">{order.user?.fullName || "Không xác định"}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm text-gray-900">
-                                                {new Date(Date.now() - idx * 86400000).toLocaleDateString('vi-VN')}
+                                                {new Date(order.createdAt).toLocaleDateString('vi-VN')}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{(2000000 - idx * 150000).toLocaleString('vi-VN')}₫</div>
+                                            <div className="text-sm text-gray-900">{order.total.toLocaleString('vi-VN')}₫</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${idx === 0 ? 'bg-yellow-100 text-yellow-800' :
-                                                    idx === 1 ? 'bg-blue-100 text-blue-800' :
-                                                        'bg-green-100 text-green-800'}`}
+                                            ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                    order.status === 'processing' || order.status === 'shipping' ? 'bg-blue-100 text-blue-800' :
+                                                        order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                                                            'bg-red-100 text-red-800'}`}
                                             >
-                                                {idx === 0 ? 'Chờ xử lý' : idx === 1 ? 'Đang giao' : 'Hoàn thành'}
+                                                {order.status === 'pending' ? 'Chờ xử lý' :
+                                                    order.status === 'processing' ? 'Đang xử lý' :
+                                                        order.status === 'shipping' ? 'Đang giao' :
+                                                            order.status === 'delivered' ? 'Hoàn thành' :
+                                                                order.status === 'cancelled' ? 'Đã hủy' :
+                                                                    'Không xác định'}
                                             </span>
                                         </td>
                                     </tr>
@@ -213,29 +280,39 @@ const DashboardPage = () => {
                     </Link>
                 </div>
                 <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {loading ? (
-                        <div>Đang tải...</div>
+                    {isLoadingProducts ? (
+                        <div className="col-span-3 flex justify-center">
+                            <LoadingSpinner size="medium" />
+                        </div>
+                    ) : popularProducts.length === 0 ? (
+                        <div className="col-span-3 text-center text-gray-500">
+                            Không có dữ liệu sản phẩm
+                        </div>
                     ) : (
-                        Array.from({ length: 3 }).map((_, idx) => (
-                            <div key={idx} className="flex items-center p-3 rounded-lg border border-gray-100 hover:bg-gray-50">
+                        popularProducts.map((product) => (
+                            <div key={product._id} className="flex items-center p-3 rounded-lg border border-gray-100 hover:bg-gray-50">
                                 <div className="bg-gray-200 h-16 w-16 rounded-md mr-4 flex-shrink-0">
                                     <img
-                                        src={`https://via.placeholder.com/64x64?text=Product${idx + 1}`}
-                                        alt={`Product ${idx + 1}`}
+                                        src={product.images?.[0] || `https://via.placeholder.com/64x64?text=Product`}
+                                        alt={product.name}
                                         className="h-full w-full object-cover rounded-md"
+                                        onError={(e) => {
+                                            const target = e.target as HTMLImageElement;
+                                            target.src = "https://via.placeholder.com/64x64?text=NoImage";
+                                        }}
                                     />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-medium text-gray-900">Product {idx + 1}</h3>
+                                    <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
                                     <p className="text-sm text-gray-500">
-                                        <span className="font-semibold text-gray-900">{(1500000 - idx * 250000).toLocaleString('vi-VN')}₫</span>
-                                        <span className="ml-2 text-green-600">({150 - idx * 30} đã bán)</span>
+                                        <span className="font-semibold text-gray-900">{product.price.toLocaleString('vi-VN')}₫</span>
+                                        <span className="ml-2 text-green-600">({product.salesCount || 0} đã bán)</span>
                                     </p>
                                     <div className="mt-1 flex items-center">
                                         {[...Array(5)].map((_, i) => (
                                             <svg
                                                 key={i}
-                                                className={`h-4 w-4 ${i < 4 ? 'text-yellow-400' : 'text-gray-300'}`}
+                                                className={`h-4 w-4 ${i < Math.round(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
                                                 fill="currentColor"
                                                 viewBox="0 0 20 20"
                                             >

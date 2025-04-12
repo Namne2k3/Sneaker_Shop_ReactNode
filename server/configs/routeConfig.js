@@ -7,6 +7,7 @@ import colorRoutes from '../routes/colorRoutes.js'
 import userRoutes from '../routes/userRoutes.js'
 import orderRoutes from '../routes/orderRoutes.js'
 import wishlistRoutes from '../routes/wishlistRoutes.js'
+import statisticsRoutes from '../routes/statisticsRoutes.js'
 
 const configRoutes = (app) => {
     // API routes
@@ -19,6 +20,7 @@ const configRoutes = (app) => {
     app.use('/api/users', userRoutes)
     app.use('/api/orders', orderRoutes)
     app.use('/api/wishlist', wishlistRoutes)
+    app.use('/api/statistics', statisticsRoutes)
 
     // Root route
     app.get('/', (req, res) => {
