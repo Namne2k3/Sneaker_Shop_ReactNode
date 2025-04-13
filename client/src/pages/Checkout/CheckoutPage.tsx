@@ -259,9 +259,9 @@ const CheckoutPage = () => {
             total: total
         };
 
-        // console.log("Check orderData:", orderData);
+        console.log("Check orderData:", orderData);
 
-        createOrderMutation.mutate(orderData);
+        // createOrderMutation.mutate(orderData);
     };
 
     // Redirect to login if not authenticated

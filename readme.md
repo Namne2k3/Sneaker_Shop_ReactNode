@@ -150,4 +150,13 @@ Dự án đi kèm với các hình ảnh minh họa cho các chức năng chính
 - **Quản lý người dùng**: [`quan_ly_nguoi_dung.png`](./pics/quan_ly_nguoi_dung.png)
 - **Quản lý mã giảm giá**: [`quan_ly_ma_giam_gia.png`](./pics/quan_ly_ma_giam_gia.png)
 
+#### Giao diện kiểm tra API Postman
+- **Xác thực**: [`postman_dang_ky.png`](./pics/postman/postman_dang_ky.png), [`postman_dang_nhap.png`](./pics/postman/postman_dang_nhap.png)
+- **Quản lý danh mục**: [`postman_danh_muc.png`](./pics/postman/postman_danh_muc.png)
+- **Quản lý đơn hàng**: [`postman_quan_ly_don_hang.png`](./pics/postman/postman_quan_ly_don_hang.png), [`postman_tao_don_hang.png`](./pics/postman/postman_tao_don_hang.png)
+- **Quản lý mã giảm giá**: [`postman_quan_ly_ma_giam_gia.png`](./pics/postman/postman_quan_ly_ma_giam_gia.png), [`postman_tao_ma_giam_gia.png`](./pics/postman/postman_tao_ma_giam_gia.png)
+- **Quản lý người dùng**: [`postman_quan_ly_nguoi_dung.png`](./pics/postman/postman_quan_ly_nguoi_dung.png)
+- **Giỏ hàng**: [`postman_gio_hang_cua_tai_khoan.png`](./pics/postman/postman_gio_hang_cua_tai_khoan.png)
+
+
 Các hình ảnh này minh họa trực quan cho các chức năng và giao diện của ứng dụng SneakerShop, giúp người dùng và nhà phát triển dễ dàng nắm bắt các tính năng của hệ thống.

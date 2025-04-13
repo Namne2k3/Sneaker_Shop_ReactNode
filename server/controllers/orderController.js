@@ -150,7 +150,7 @@ export const createOrder = async (req, res, next) => {
             }
         }
 
-        res.status(201).json(savedOrder);
+        return okResponse(res, 'Tạo đơn hàng thành công', savedOrder);
     } catch (err) {
         next(err);
     }
