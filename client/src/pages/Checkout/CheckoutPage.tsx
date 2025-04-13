@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useMutation } from '@tanstack/react-query';
@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import orderService from '../../services/orderService';
+import couponService from '../../services/couponService';
+import AlertMessage from '../../components/common/AlertMessage';
 
 interface CartItem {
     _id: string;
@@ -38,6 +40,7 @@ interface ShippingFormData {
     district: string;
     ward: string;
     notes: string;
+    coupon: string;
     paymentMethod: 'cod' | 'banking';
     shippingFee: number;
 }
@@ -47,6 +50,7 @@ const CheckoutPage = () => {
     const navigate = useNavigate();
     const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
     const [selectedProducts, setSelectedProducts] = useState<CartItem[]>([]);
+    const [messageCoupon, setMessageCoupon] = useState<string>(null);
 
     // Form state
     const [formData, setFormData] = useState<ShippingFormData>({
@@ -58,6 +62,7 @@ const CheckoutPage = () => {
         district: '',
         ward: '',
         notes: '',
+        coupon: '',
         paymentMethod: 'cod',
         shippingFee: 30000
     });
@@ -90,6 +95,7 @@ const CheckoutPage = () => {
     // Handle form input changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
+
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -158,6 +164,19 @@ const CheckoutPage = () => {
         }
     });
 
+    const applyCouponMutation = useMutation({
+        mutationFn: (data: { couponCode: string; orderAmount: number }) => {
+            return couponService.validateCoupon(data.couponCode, data.orderAmount);
+        },
+        onSuccess: (response) => {
+            toast.success('Đã áp dụng mã giảm giá!');
+            setMessageCoupon(response.data);
+        },
+        onError: (error: any) => {
+            toast.error(error.response?.data?.message || 'Đã xảy ra lỗi khi áp dụng mã giảm giá!');
+        }
+    });
+
     // Format price with Vietnamese currency
     const formatPrice = (price: number) => {
         if (price === undefined || isNaN(price)) {
@@ -173,10 +192,10 @@ const CheckoutPage = () => {
     };
 
     // Calculate totals - use calculatedPrice from CartPage if available
-    const calculateSubtotal = () => {
+    const calculateSubtotalFUnc = () => {
         if (!selectedProducts || selectedProducts.length === 0) return 0;
 
-        return selectedProducts.reduce((total, item) => {
+        let total = selectedProducts.reduce((total, item) => {
             // Use the pre-calculated price if available, otherwise calculate it
             const itemPrice = item.calculatedPrice ||
                 ((item.product.salePrice || item.product.basePrice) + (item.variant?.additionalPrice || 0));
@@ -187,7 +206,16 @@ const CheckoutPage = () => {
 
             return total + (itemPrice * quantity);
         }, 0);
+
+        if (formData.coupon !== '') {
+            // Apply discount if coupon is valid
+            const discount = messageCoupon?.data?.type == 'percentage' ? (total * messageCoupon?.data?.value) / 100 : messageCoupon?.data?.value || 0;
+            total -= discount;
+        }
+        return total < 0 ? 0 : total; // Ensure total is not negative
     };
+
+    let calculateSubtotal = useMemo(() => calculateSubtotalFUnc(), [selectedProducts, formData.coupon, messageCoupon]);
 
     const handleCheckoutSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -195,7 +223,7 @@ const CheckoutPage = () => {
         // Validate form before submission
         if (!validateForm()) return;
 
-        const subtotal = calculateSubtotal(); // / No discount applied yet
+        const subtotal = calculateSubtotal; // / No discount applied yet
         const shippingFee = 30000;
         const total = subtotal + shippingFee;
 
@@ -222,6 +250,7 @@ const CheckoutPage = () => {
                 district: formData.district,
                 ward: formData.ward,
             },
+            coupon: formData.coupon.trim().toUpperCase(),
             items: orderItems,
             paymentMethod: formData.paymentMethod,
             notes: formData.notes,
@@ -230,7 +259,7 @@ const CheckoutPage = () => {
             total: total
         };
 
-        console.log("Check orderData:", orderData);
+        // console.log("Check orderData:", orderData);
 
         createOrderMutation.mutate(orderData);
     };
@@ -483,16 +512,41 @@ const CheckoutPage = () => {
                         <div className="border-t border-gray-200 pt-4 space-y-3">
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Tạm tính:</span>
-                                <span>{formatPrice(calculateSubtotal())}</span>
+                                <span>{formatPrice(calculateSubtotal)}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Phí vận chuyển:</span>
                                 <span>{formatPrice(30000)}</span>
                             </div>
+                            <div className="pt-2 border-t border-gray-200 flex justify-between items-center">
+                                <span className="font-semibold">Mã giảm giá:</span>
+                                <div className='flex items-center space-x-2'>
+                                    <input name='coupon' onChange={handleInputChange} placeholder='Nhập mã giảm giá' type="text" className='p-2 text-left' />
+                                    <button
+                                        onClick={() => {
+                                            if (calculateSubtotal !== undefined) {
+                                                applyCouponMutation.mutate({
+                                                    couponCode: formData.coupon.trim().toUpperCase(),
+                                                    orderAmount: calculateSubtotal
+                                                });
+                                            } else {
+                                                toast.error('Không thể tính tổng giá trị đơn hàng');
+                                            }
+                                        }}
+                                        className="text-sm text-gray-100 p-2 cursor-pointer hover:opacity-[0.8] bg-primary rounded-lg"
+                                    >
+                                        Kiểm tra
+                                    </button>
+                                </div>
+                            </div>
                             <div className="pt-2 border-t border-gray-200 flex justify-between">
                                 <span className="font-semibold">Tổng cộng:</span>
-                                <span className="text-lg text-primary font-bold">{formatPrice(calculateSubtotal())}</span>
+                                <span className="text-lg text-primary font-bold">{formatPrice(calculateSubtotal)}</span>
                             </div>
+                            {
+                                messageCoupon != null &&
+                                <AlertMessage type={messageCoupon.success ? 'success' : 'warning'} message={messageCoupon.success ? 'Đơn hàng đã được áp dụng mã giảm giá' : 'Có lỗi khi áp dụng mã giảm giá'} />
+                            }
                         </div>
                     </div>
                 </div>

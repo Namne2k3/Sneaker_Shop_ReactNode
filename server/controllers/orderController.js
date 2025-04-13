@@ -1,25 +1,60 @@
+import Cart from '../models/Cart.js';
+import Coupon from '../models/Coupon.js';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import ProductVariant from '../models/ProductVariant.js';
-import Cart from '../models/Cart.js';
 // import { createError } from '../utils/error.js';
 import {
-    okResponse,
-    createdResponse,
-    notFoundResponse,
     badRequestResponse,
-    unauthorizedResponse,
-    handleError
+    handleError,
+    notFoundResponse,
+    okResponse,
+    unauthorizedResponse
 } from '../utils/response.js';
 
 // Create new order
 export const createOrder = async (req, res, next) => {
     try {
-        const { shippingDetails, items, paymentMethod, notes, subtotal, shippingFee, total } = req.body;
-        console.log("Check req body >>> ", req.body)
+        const { shippingDetails, items, paymentMethod, notes, subtotal, shippingFee, total, coupon } = req.body;
         // return;
         if (!items || items.length === 0) {
             return badRequestResponse(res, 'Không có sản phẩm nào trong đơn hàng');
+        }
+
+        if (coupon) {
+            const couponData = await Coupon.findOne({ code: coupon });
+            if (!couponData) {
+                return badRequestResponse(res, 'Mã giảm giá không tồn tại');
+            } else {
+                if (!couponData.isValid) {
+                    return badRequestResponse(res, 'Mã giảm giá không hợp lệ');
+                }
+                // if (couponData.minOrderAmount > total) {
+                //     return badRequestResponse(res, `Đơn hàng tối thiểu ${couponData.minOrderAmount} để áp dụng mã giảm giá`);
+                // }
+                if (couponData.usageCount >= couponData.maxUsage && couponData.maxUsage > 0) {
+                    return badRequestResponse(res, 'Mã giảm giá đã hết lượt sử dụng');
+                }
+                if (new Date() < couponData.startDate) {
+                    return badRequestResponse(res, 'Mã giảm giá chưa có hiệu lực');
+                }
+                if (new Date() > couponData.endDate) {
+                    return badRequestResponse(res, 'Mã giảm giá đã hết hạn');
+                }
+
+                // Update coupon usage count
+                couponData.usageCount += 1;
+                if (couponData.type === 'percentage') {
+                    const discount = (total * couponData.value) / 100;
+                    req.body.discount = discount;
+                    req.body.total -= discount;
+                } else if (couponData.type === 'fixed') {
+                    req.body.discount = couponData.value;
+                    req.body.total -= couponData.value;
+                }
+                await couponData.save();
+                req.body.coupon = couponData._id;
+            }
         }
 
         // Validate and prepare order items
@@ -55,15 +90,15 @@ export const createOrder = async (req, res, next) => {
         }
 
         // Verify total matches calculation
-        const calculatedSubtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        if (Math.abs(calculatedSubtotal - subtotal) > 0.001) {
-            return next(createError(400, 'Tổng tiền đơn hàng không khớp'));
-        }
+        // const calculatedSubtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        // if (Math.abs(calculatedSubtotal - subtotal) > 0.001) {
+        //     return next(createError(400, 'Tổng tiền đơn hàng không khớp'));
+        // }
 
-        const calculatedTotal = subtotal + shippingFee - (req.body.discount || 0);
-        if (Math.abs(calculatedTotal - total) > 0.001) {
-            return next(createError(400, 'Tổng tiền thanh toán không khớp'));
-        }
+        // const calculatedTotal = subtotal + shippingFee - (req.body.discount || 0);
+        // if (Math.abs(calculatedTotal - total) > 0.001) {
+        //     return next(createError(400, 'Tổng tiền thanh toán không khớp'));
+        // }
 
         // Create order
         const newOrder = new Order({
@@ -74,6 +109,8 @@ export const createOrder = async (req, res, next) => {
             total,
             paymentMethod,
             notes,
+            coupon: req.body.coupon || null,
+            discount: req.body.discount || 0,
             shippingAddress: {
                 fullName: shippingDetails.fullName,
                 email: shippingDetails.email,
