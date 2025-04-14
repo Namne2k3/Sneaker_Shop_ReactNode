@@ -1,0 +1,25 @@
+Mục đích của file sitemap.xml
+File sitemap.xml là một công cụ quan trọng cho SEO, giúp các công cụ tìm kiếm (như Google, Bing) hiểu cấu trúc và nội dung của trang web của bạn. Cụ thể:
+
+Giúp các bot tìm kiếm tìm thấy tất cả trang: Sitemap giúp chỉ dẫn các bot đến mọi trang trên website, đặc biệt là những trang mà có thể không được liên kết trực tiếp từ menu hoặc các liên kết khác.
+
+Cải thiện tốc độ lập chỉ mục: Bot tìm kiếm sẽ biết chính xác những URL nào cần thu thập thông tin, giúp trang web của bạn được lập chỉ mục nhanh hơn.
+
+Thông báo tần suất cập nhật: Cho công cụ tìm kiếm biết mỗi trang được cập nhật thường xuyên như thế nào.
+
+Xác định mức độ ưu tiên: Giúp bạn chỉ định mức độ ưu tiên cho các trang khác nhau trên website.
+
+Cách hoạt động
+Tạo file XML: Bạn tạo một file XML theo cấu trúc chuẩn của sitemap.
+Đặt file ở thư mục gốc: File này thường được đặt ở thư mục gốc của website (vd: yourdomain.com/sitemap.xml).
+Đăng ký với công cụ tìm kiếm: Bạn nên đăng ký sitemap trong Google Search Console, Bing Webmaster Tools.
+Tham chiếu trong robots.txt: Thêm đường dẫn tới sitemap trong file robots.txt để các bot tìm kiếm dễ dàng tìm thấy nó.
+
+
+
+<urlset>: Thẻ gốc của file
+<url>: Chứa thông tin về một URL cụ thể
+<loc>: URL đầy đủ của trang (bắt buộc)
+<lastmod>: Ngày trang được sửa đổi lần cuối (không bắt buộc)
+<changefreq>: Tần suất thay đổi nội dung trang (không bắt buộc)
+<priority>: Mức độ ưu tiên của trang (0.0 đến 1.0, không bắt buộc)

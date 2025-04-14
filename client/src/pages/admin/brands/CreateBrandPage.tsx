@@ -173,6 +173,7 @@ const CreateBrandPage = () => {
                                         <img
                                             src={imagePreview}
                                             alt="Logo preview"
+                                            loading='lazy'
                                             className="w-full h-full object-contain"
                                         />
                                     </div>

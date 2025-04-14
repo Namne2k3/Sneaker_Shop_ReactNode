@@ -185,6 +185,7 @@ const CategoryDetailsPage = () => {
                                     <img
                                         src={category.image}
                                         alt={category.name}
+                                        loading='lazy'
                                         className="h-full w-full object-cover object-center"
                                         onError={(e) => {
                                             const target = e.target as HTMLImageElement;
@@ -273,6 +274,7 @@ const CategoryDetailsPage = () => {
                                                         <div className="flex items-center">
                                                             <div className="flex-shrink-0 h-10 w-10">
                                                                 <img
+                                                                    loading='lazy'
                                                                     className="h-10 w-10 rounded-md object-cover"
                                                                     src={product.images?.find(img => img.isPrimary == true).imagePath || "https://via.placeholder.com/100"}
                                                                     alt={product.name}
@@ -360,6 +362,7 @@ const CategoryDetailsPage = () => {
                                                 <img
                                                     src={child.image || "https://via.placeholder.com/300x150?text=No+Image"}
                                                     alt={child.name}
+                                                    loading='lazy'
                                                     className="w-full h-full object-cover"
                                                     onError={(e) => {
                                                         const target = e.target as HTMLImageElement;

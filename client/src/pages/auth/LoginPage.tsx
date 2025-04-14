@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { login } from '../../store/slices/authSlice';
 import { authAPI } from '../../services/api';
 
@@ -21,6 +21,8 @@ const LoginPage: React.FC = () => {
             [name]: value,
         });
     };
+
+    const { isAuthenticated } = useAppSelector((state) => state.auth)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,6 +47,17 @@ const LoginPage: React.FC = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+        }
+
+        return () => {
+            setError('');
+            setLoading(false);
+        }
+    }, [isAuthenticated, navigate]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">

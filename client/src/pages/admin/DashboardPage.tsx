@@ -330,6 +330,7 @@ const DashboardPage = () => {
                                                 const target = e.target as HTMLImageElement;
                                                 target.src = "https://via.placeholder.com/64x64?text=NoImage";
                                             }}
+                                            loading='lazy'
                                         />
                                     </div>
                                     <div className="flex-1">

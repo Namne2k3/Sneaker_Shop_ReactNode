@@ -673,6 +673,7 @@ const EditProductPage: React.FC = () => {
                                             <div key={image._id} className="relative group">
                                                 <div className={`aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 ${image._id === primaryImageId ? 'ring-2 ring-primary' : ''}`}>
                                                     <img
+                                                        loading='lazy'
                                                         src={image.imagePath}
                                                         alt="Product preview"
                                                         className="h-full w-full object-cover object-center"
@@ -760,6 +761,7 @@ const EditProductPage: React.FC = () => {
                                                 <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200">
                                                     <img
                                                         src={url}
+                                                        loading='lazy'
                                                         alt={`Preview ${index}`}
                                                         className="h-full w-full object-cover object-center"
                                                     />

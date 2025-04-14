@@ -186,6 +186,7 @@ const CategoriesPage = () => {
                                                         className="h-10 w-10 rounded-md object-cover"
                                                         src={category.image}
                                                         alt={category.name}
+                                                        loading='lazy'
                                                         onError={(e) => {
                                                             const target = e.target as HTMLImageElement;
                                                             target.src = "https://via.placeholder.com/40x40?text=No+Image";

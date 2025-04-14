@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../../services/api';
+import { useAppSelector } from '../../store/hooks';
 
 const RegisterPage: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -13,6 +14,8 @@ const RegisterPage: React.FC = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    const { isAuthenticated } = useAppSelector((state) => state.auth)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -56,6 +59,17 @@ const RegisterPage: React.FC = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+        }
+
+        return () => {
+            setError('');
+            setLoading(false);
+        }
+    }, [isAuthenticated, navigate]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">

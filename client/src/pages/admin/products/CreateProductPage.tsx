@@ -497,6 +497,7 @@ const CreateProductPage: React.FC = () => {
                                                 <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200">
                                                     <img
                                                         src={url}
+                                                        loading='lazy'
                                                         alt={`Preview ${index}`}
                                                         className="h-full w-full object-cover object-center group-hover:opacity-75"
                                                     />

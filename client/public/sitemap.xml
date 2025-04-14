@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- urlset: thẻ gốc của file -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Trang chủ -->
+  <!-- url: chứa thông tin về một url cụ thể -->
+  <url>
+
+    <!-- URL đầy đủ của trang (bắt buộc) -->
+    <loc>https://yourdomain.com/</loc>
+
+    <!-- lastmod: Ngày trang được sửa đổi lần cuối (không bắt buộc) -->
+    <lastmod>2025-04-13</lastmod>
+
+    <!-- changefreq: Tần suất thay đổi của trang (không bắt buộc) -->
+    <changefreq>weekly</changefreq>
+
+    <!-- priority: Độ ưu tiên của trang (không bắt buộc) -->
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Trang sản phẩm -->
+  <url>
+    <loc>https://yourdomain.com/products</loc>
+    <lastmod>2025-04-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- trang chi tiết sản phẩm -->
+  <url>
+    <loc>https://yourdomain.com/products/nike-air-force-1</loc>
+    <lastmod>2025-04-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <!-- Thêm các URL khác -->
+</urlset>

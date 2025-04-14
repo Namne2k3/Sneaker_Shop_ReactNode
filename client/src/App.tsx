@@ -42,6 +42,8 @@ import ProfilePage from './pages/Account/ProfilePage'
 import CouponsPage from './pages/admin/coupons/CouponsPage'
 import CreateCouponPage from './pages/admin/coupons/CreateCouponPage'
 import EditCouponPage from './pages/admin/coupons/EditCouponPage'
+import { Suspense } from 'react'
+import LoadingSpinner from './components/common/LoadingSpinner'
 
 function App() {
   return (
@@ -192,7 +194,9 @@ function App() {
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow">
-                <ProductDetailClientPage />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ProductDetailClientPage />
+                </Suspense>
               </main>
               <Footer />
             </div>
@@ -202,7 +206,9 @@ function App() {
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow">
-                <LoginPage />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <LoginPage />
+                </Suspense>
               </main>
               <Footer />
             </div>
@@ -211,7 +217,9 @@ function App() {
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow">
-                <RegisterPage />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RegisterPage />
+                </Suspense>
               </main>
               <Footer />
             </div>
@@ -220,7 +228,9 @@ function App() {
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow">
-                <CartPage />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <CartPage />
+                </Suspense>
               </main>
               <Footer />
             </div>
@@ -229,7 +239,9 @@ function App() {
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow">
-                <CheckoutPage />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <CheckoutPage />
+                </Suspense>
               </main>
               <Footer />
             </div>
@@ -238,7 +250,9 @@ function App() {
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow">
-                <OrderSuccessPage />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <OrderSuccessPage />
+                </Suspense>
               </main>
               <Footer />
             </div>
@@ -247,7 +261,9 @@ function App() {
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow">
-                <OrdersPage />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <OrdersPage />
+                </Suspense>
               </main>
               <Footer />
             </div>
@@ -256,7 +272,9 @@ function App() {
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow">
-                <OrderDetailPage />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <OrderDetailPage />
+                </Suspense>
               </main>
               <Footer />
             </div>
@@ -265,7 +283,9 @@ function App() {
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow">
-                <ProfilePage />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ProfilePage />
+                </Suspense>
               </main>
               <Footer />
             </div>

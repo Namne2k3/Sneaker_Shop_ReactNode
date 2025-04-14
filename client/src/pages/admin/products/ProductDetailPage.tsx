@@ -306,6 +306,7 @@ const ProductDetailPage: React.FC = () => {
                                             <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200">
                                                 <img
                                                     src={image.imagePath}
+                                                    loading='lazy'
                                                     alt={`${product.name} - Hình ${index + 1}`}
                                                     className="h-full w-full object-cover object-center"
                                                 />

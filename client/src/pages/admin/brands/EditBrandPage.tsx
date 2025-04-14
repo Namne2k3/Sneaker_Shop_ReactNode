@@ -184,6 +184,7 @@ const EditBrandPage = () => {
                                     <div className="w-32 h-32 rounded-lg border overflow-hidden bg-gray-50">
                                         <img
                                             src={currentLogo}
+                                            loading='lazy'
                                             alt="Current logo"
                                             className="w-full h-full object-contain"
                                         />
@@ -243,6 +244,7 @@ const EditBrandPage = () => {
                                             <div className="w-32 h-32 rounded-lg border overflow-hidden bg-gray-50">
                                                 <img
                                                     src={imagePreview}
+                                                    loading='lazy'
                                                     alt="New logo preview"
                                                     className="w-full h-full object-contain"
                                                 />

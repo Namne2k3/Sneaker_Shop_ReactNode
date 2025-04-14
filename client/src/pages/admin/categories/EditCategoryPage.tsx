@@ -257,6 +257,7 @@ const EditCategoryPage: React.FC = () => {
                                         <img
                                             src={imagePreview}
                                             alt="Preview"
+                                            loading='lazy'
                                             className="w-full h-full object-cover"
                                         />
                                     </div>

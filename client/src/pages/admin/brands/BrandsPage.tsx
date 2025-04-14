@@ -214,6 +214,7 @@ const BrandsPage = () => {
                                                     <img
                                                         className="h-10 w-10 rounded-full object-contain bg-gray-100"
                                                         src={brand.logo}
+                                                        loading='lazy'
                                                         alt={brand.name}
                                                     />
                                                 ) : (

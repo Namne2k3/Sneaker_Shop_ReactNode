@@ -56,6 +56,7 @@ const MiniCartPreview = ({ isVisible, onClose }: MiniCartPreviewProps) => {
                                                     onError={(e) => {
                                                         (e.target as HTMLImageElement).src = "https://via.placeholder.com/100x100?text=No+Image";
                                                     }}
+                                                    loading='lazy'
                                                 />
                                             </div>
                                             <div className="ml-4 flex-1">

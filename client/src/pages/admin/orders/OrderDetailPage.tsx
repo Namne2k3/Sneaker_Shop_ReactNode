@@ -331,6 +331,7 @@ const OrderDetailPage = () => {
                                                         <img
                                                             src={item.image || "https://via.placeholder.com/150"}
                                                             alt={item.name}
+                                                            loading='lazy'
                                                             className="h-16 w-16 object-cover rounded-md"
                                                             onError={(e) => {
                                                                 (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=No+Image";

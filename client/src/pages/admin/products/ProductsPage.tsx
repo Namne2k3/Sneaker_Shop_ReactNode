@@ -495,7 +495,7 @@ const ProductsPage = () => {
                                         <td className="px-4 py-4">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 h-10 w-10">
-                                                    <img className="h-10 w-10 rounded-md object-cover" src={product.thumbnail} alt={product.name} />
+                                                    <img loading='lazy' className="h-10 w-10 rounded-md object-cover" src={product.thumbnail} alt={product.name} />
                                                 </div>
                                                 <div className="ml-4">
                                                     <div className="text-sm font-medium text-gray-900">

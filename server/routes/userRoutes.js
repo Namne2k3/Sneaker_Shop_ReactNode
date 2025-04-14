@@ -42,6 +42,6 @@ router.put('/:id/status', authenticate, isAdmin, idValidation, validateRequest, 
 // User profile routes (for authenticated users)
 router.get('/profile', authenticate, getUserProfile);
 router.put('/profile', authenticate, parseFormData, userValidation.updateProfile, validateRequest, updateUser);
-router.put('/change-password', authenticate, userValidation.changePassword, validateRequest, changeUserPassword);
+router.put('/password/change-password', authenticate, userValidation.changePassword, validateRequest, changeUserPassword);
 
 export default router;

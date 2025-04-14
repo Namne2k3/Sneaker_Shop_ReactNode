@@ -287,6 +287,7 @@ const CartPage = () => {
                                             <img
                                                 src={item.product.images.find(img => img.isPrimary)?.imagePath || item.product.images[0]?.imagePath}
                                                 alt={item.product.name}
+                                                loading='lazy'
                                                 className="h-full w-full object-cover object-center"
                                                 onError={(e) => {
                                                     (e.target as HTMLImageElement).src = "https://via.placeholder.com/200x200?text=No+Image";

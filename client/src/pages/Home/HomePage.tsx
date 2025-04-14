@@ -177,6 +177,7 @@ const HomePage = () => {
                                 className="w-3/4 h-auto object-contain"
                                 src="/images/banner-shoes.png"
                                 alt="Giày thể thao"
+                                loading='lazy'
                             />
                         </div>
                     </div>
@@ -198,6 +199,7 @@ const HomePage = () => {
                             <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
                                 <div className="relative h-40 bg-gray-100">
                                     <img
+                                        loading='lazy'
                                         src={category.image || "/images/placeholder.png"}
                                         alt={category.name}
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -232,6 +234,7 @@ const HomePage = () => {
                                     <img
                                         src={product.thumbnail || "/images/product-placeholder.png"}
                                         alt={product.name}
+                                        loading='lazy'
                                         className="w-full h-full object-cover"
                                     />
                                 </div>
@@ -278,7 +281,7 @@ const HomePage = () => {
                             </div>
                         </div>
                         <div className="hidden md:block md:w-1/3">
-                            <img src="/images/discount.png" alt="Khuyến mãi" className="w-full" />
+                            <img loading='lazy' src="/images/discount.png" alt="Khuyến mãi" className="w-full" />
                         </div>
                     </div>
                 </div>
@@ -299,6 +302,7 @@ const HomePage = () => {
                             <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
                                 <div className="relative h-48 bg-gray-100">
                                     <img
+                                        loading='lazy'
                                         src={product.thumbnail || "/images/product-placeholder.png"}
                                         alt={product.name}
                                         className="w-full h-full object-cover"
@@ -338,6 +342,7 @@ const HomePage = () => {
                             <div className="bg-white h-24 rounded-md flex items-center justify-center p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
                                 {brand.logo ? (
                                     <img
+                                        loading='lazy'
                                         src={brand.logo}
                                         alt={brand.name}
                                         className="max-h-full max-w-full opacity-80 hover:opacity-100 transition-opacity duration-300"

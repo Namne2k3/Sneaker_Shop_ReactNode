@@ -246,6 +246,7 @@ const OrderDetailPage = () => {
                                                             onError={(e) => {
                                                                 (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=No+Image";
                                                             }}
+                                                            loading='lazy'
                                                         />
                                                     </div>
                                                     <div>

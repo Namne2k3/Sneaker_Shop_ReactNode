@@ -111,6 +111,7 @@ const BrandDetailPage = () => {
                                     <img
                                         src={brand.logo}
                                         alt={`Logo ${brand.name}`}
+                                        loading='lazy'
                                         className="w-full h-full object-contain"
                                     />
                                 ) : (
@@ -215,6 +216,7 @@ const BrandDetailPage = () => {
                                         <img
                                             src={product.thumbnail || 'https://via.placeholder.com/300x150?text=No+Image'}
                                             alt={product.name}
+                                            loading='lazy'
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
