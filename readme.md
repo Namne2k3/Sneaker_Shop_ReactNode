@@ -75,6 +75,27 @@ Dự án được chia thành 3 phần chính:
 - **Sizes**: Các kích cỡ
 - **Coupons**: Mã giảm giá
 
+## Tối ưu hóa SEO
+
+Dự án đã được tối ưu hóa SEO để cải thiện hiệu suất và khả năng hiển thị trên các công cụ tìm kiếm:
+
+![SEO Overview](./pics/demo_SEO.png)
+
+### Các kỹ thuật SEO đã triển khai
+- **Meta Tags**: Cung cấp thông tin mô tả, tiêu đề và từ khóa phù hợp
+- **Structured Data (JSON-LD)**: Cấu trúc dữ liệu sản phẩm cho các Rich Snippets
+- **Sitemap.xml**: Tạo sitemap động giúp các công cụ tìm kiếm lập chỉ mục nhanh hơn
+- **Robots.txt**: Hướng dẫn cho bot của công cụ tìm kiếm
+- **Lazy Loading**: Tối ưu hóa tải hình ảnh để cải thiện tốc độ trang
+- **Semantic HTML**: Sử dụng đúng cấu trúc HTML5 và heading tags
+- **Responsive Design**: Tối ưu hóa trải nghiệm trên mọi thiết bị
+
+### Hiệu suất SEO
+- Performance: 82/100
+- Accessibility: 91/100
+- Best Practices: 74/100 
+- SEO Score: 100/100
+
 ## Hướng dẫn cài đặt
 
 ### Yêu cầu
