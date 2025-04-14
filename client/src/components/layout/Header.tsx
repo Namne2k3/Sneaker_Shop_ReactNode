@@ -99,6 +99,12 @@ const Header = () => {
                 <div className="flex justify-between items-center py-4">
                     {/* Logo */}
                     <Link to="/" className="flex items-center">
+                        <img
+                            src="/logo.png"
+                            alt="SneakerShop Logo"
+                            className="h-10 w-auto mr-2"
+                            loading='lazy'
+                        />
                         <span className="text-2xl font-bold text-primary">SneakerShop</span>
                     </Link>
 

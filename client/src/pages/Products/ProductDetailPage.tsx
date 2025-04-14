@@ -68,7 +68,7 @@ const ProductJsonLd = ({ product }) => {
                     "sku": product._id,
                     "offers": {
                         "@type": "Offer",
-                        "url": `https://yourdomain.com/products/${product.slug}`,
+                        "url": `https://sneaker-shop-react-node.vercel.app/products/${product.slug}`,
                         "priceCurrency": "VND",
                         "price": product.salePrice || product.basePrice,
                         "availability": product.status === "active"
